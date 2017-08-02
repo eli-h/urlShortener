@@ -4,17 +4,48 @@
 <head>
   <% include ./partials/_header %>
 </head>
-<body>
+<style>
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #e2e2e2;
+    border-radius:6px;
+    -moz-border-radius:6px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+body
+{
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #444444;
+    font-size: 14pt;
+    background-color: #FAFAFA;
+}
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+</style>
+<body style="line-height: 30px;">
     <!-- Add your EJS code here -->
-  <h1>urls</h1>
-  <ul>
+  <h1>URLs</h1>
+  <table>
+    <tr>
+      <th>Short URL // Long URL</th>
+    </tr>
     <% for (key in urls) { %>
-      <li><%=key%> - <%= urls[key] %></li>
-      <form method="POST" action="/urls/<%=key%>/delete">
-      	<input type="submit" value="DELETE">
-      </form>
+    <tr>
+        <td><b><%= key %></b>: <%= urls[key] %></td>
+        <td><form method="POST" action="/urls/<%=key%>/delete">
+        	<input type="submit" value="DELETE">
+        </form></td>
+    </tr>
     <% }; %>
-  </ul>
+  </table>
   <a href="">shorten your links!</a>
 </body>
 </html>
