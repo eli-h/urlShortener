@@ -49,6 +49,12 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls/:id", (req, res) => { 
+  //what if 2 users want to use same link?
+  urlDatabase[req.params.id] = req.body.updateURL;
+  res.redirect("/urls");       
+});
+
 app.post("/urls", (req, res) => { 
   let x = generateRandomString()
   urlDatabase[x] = req.body.longURL;
@@ -61,6 +67,11 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post("/urls/:key/delete", (req, res) => { 
+  console.log(req.params.key);
+  delete urlDatabase[req.params.key];
+  res.redirect("/urls/");       
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
