@@ -14,6 +14,19 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+	"randomID":{
+    id: "randomID",
+    email: "test@test.com",
+    password: "testpassword"
+	},
+	"randomID2":{
+		id: "randomID2",
+		email: "champagnpapi@mandem.ca",
+		password: "gossa"
+	}
+};
+
 function generateRandomString(){
 	let random = "";
 	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -23,6 +36,17 @@ function generateRandomString(){
   }
   return random;
 }
+//renders login page
+app.get("/login", (req, res) => {
+  let userId = req.cookies['user_id']
+  let user = users[userId];
+  res.render("urls_login", {user: user});
+});
+
+//renders the register page
+app.get("/register", (req, res) => {
+  res.render("urls_register");
+});
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -35,19 +59,24 @@ app.get("/urls", (req, res) => {
   }	else {
     usernameCookie = undefined;  
   }
-  console.log(req.cookies)
-  console.log(usernameCookie)
-	let templateVars = {username: usernameCookie, urls: urlDatabase};
+	let templateVars = {
+    users: users[user_id], 
+    urls: urlDatabase
+  };
 	res.render('urls_index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-	let templateVars = {username: req.cookies['username']}
+	let templateVars = users
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {username: req.cookies['username'], shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+  let templateVars = {
+    users: users[user_id], 
+    shortURL: req.params.id, 
+    longURL: urlDatabase[req.params.id] 
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -82,6 +111,30 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => { 
   res.clearCookie('username')
   res.redirect("/urls/");       
+});
+
+app.post("/register", (req, res) => {
+  let x = generateRandomString();
+  let userEmail = req.body.email
+  let userPassword = req.body.password
+  if (userEmail.length <= 0 || userPassword.length <= 0){
+    res.status(400);
+    res.send("404")
+    res.redirect('/register')
+  } else {
+    for (let key in users){
+      if (users[key].email === userEmail){
+        res.send("already exists")
+        break;
+      }
+    }
+  }
+  users[x] = {
+    email: userEmail,
+    password: userPassword
+  }
+  res.cookie('user_id', x)
+  res.redirect("/urls")
 });
 
 app.listen(PORT, () => {

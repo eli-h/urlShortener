@@ -19,6 +19,7 @@ th, td {
 }
 body
 {
+    margin:10;
     font-family: 'Helvetica', 'Arial', sans-serif;
     color: #444444;
     font-size: 14pt;
@@ -29,10 +30,16 @@ body
     height:auto;
     display:inline-block;
 }
+.topnav {
+  overflow: hidden;
+  background-color: #e2e2e2;
+  border-radius:6px;
+}
+
 </style>
 <body style="line-height: 30px;">
     <!-- Add your EJS code here -->
-  <% include ./partials/_header %>
+  <% include ./partials/_header %> 
   <h1>URLs</h1>
   <table>
     <tr>

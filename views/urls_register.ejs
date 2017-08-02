@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <title>tinyapp</title>
+</head>
+<style>
+input[type=email], input[type=password] {
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+</style>
+<body>
+	<form action="/register" method="POST"">
+
+		<input id="email" type="email" name="email" placeholder="email">
+		<input id="password" type="password" name="password" placeholder="password">
+
+		<input type="submit" value="Sign Up">
+	</form>
+</body>
