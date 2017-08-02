@@ -1,1 +1,13 @@
-<title>TinycrApp</title>
+<div>
+  <% if (username === undefined) { %>
+		<form action="/login" method="POST">
+			<input id="username" type="text" name="username" placeholder="make a username" style="width: 300px">
+			<input type="submit" value="Sign In">
+		</form>
+	<% } else { %>
+	  <p>User: <b><%= username %></b></p>
+	  <form action="/logout" method="POST">
+			<input type="submit" value="Logout">
+		</form>
+	<% }; %>
+</div>
