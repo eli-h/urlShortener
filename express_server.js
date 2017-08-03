@@ -10,8 +10,14 @@ var cookieParser = require('cookie-parser')
 app.use(cookieParser());
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "randomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "randomID2"
+  }
 };
 
 const users = {
@@ -23,9 +29,20 @@ const users = {
 	"randomID2":{
 		id: "randomID2",
 		email: "champagnpapi@mandem.ca",
-		password: "gossa"
+		password: "brej"
 	}
 };
+
+function urlsForUser(id){
+  let userLinks = {}
+  //let current_user = req.cookies['user_id']
+  for (var url in urlDatabase){
+    if (urlDatabase[url].userID === id){
+      userLinks[url] = urlDatabase[url]
+    }
+  }
+  return userLinks;
+}
 
 function generateRandomString(){
 	let random = "";
@@ -53,51 +70,78 @@ app.get("/", (req, res) => {
 });
     
 app.get("/urls", (req, res) => {
+  let current_user = users[req.cookies['user_id']]
   let userId = req.cookies['user_id']
   let user = users[userId];
-	let templateVars = {
+  let links = urlsForUser(req.cookies['user_id']);
+    let templateVars = {
     user: user, 
-    urls: urlDatabase
+    urls: links
   };
+  //console.log(links)
+  if (!current_user){
+    res.redirect('/login')
+  } else {
+    templateVars.link = links
+    //console.log(templateVars)
+  }
+
 	res.render('urls_index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  let current_user = req.cookies['user_id']
   let userId = req.cookies['user_id']
   let user = users[userId];
-	let templateVars = user
-  res.render("urls_new", templateVars);
+	//let templateVars = user
+  console.log(current_user)
+  if (current_user) {
+      res.render("urls_new", {user: user});
+  } else {
+      res.redirect('/login')
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    users: users[user_id], 
+    user: users[req.cookies.user_id], 
     shortURL: req.params.id, 
-    longURL: urlDatabase[req.params.id] 
+    longURL: urlDatabase[req.params.id].longURL
   };
-  res.render("urls_show", templateVars);
+  let current_user = req.cookies['user_id']
+  if (current_user === urlDatabase[req.params.id]['userID']){
+    res.render("urls_show", templateVars);
+  } else {
+    res.send('cannot edit someone elses url')
+  }
 });
 
 app.post("/urls/:id", (req, res) => { 
   //what if 2 users want to use same link?
-  urlDatabase[req.params.id] = req.body.updateURL;
+  urlDatabase[req.params.id].longURL = req.body.updateURL;
   res.redirect("/urls");       
 });
 
 app.post("/urls", (req, res) => { 
   let x = generateRandomString()
-  urlDatabase[x] = req.body.longURL;
-  res.redirect("urls/" + x);       
+  urlDatabase[x] = {
+    longURL: req.body.longURL,
+    userID: req.cookies['user_id']
+  }
+  res.redirect("urls/");       
 });
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL)
+  //console.log(longURL)
   res.redirect(longURL);
 });
 
 app.post("/urls/:key/delete", (req, res) => { 
-  delete urlDatabase[req.params.key];
+  let current_user = req.cookies['user_id']
+  if (current_user === urlDatabase[req.params.key]['userID']){
+      delete urlDatabase[req.params.key]
+    }
   res.redirect("/urls/");       
 });
 
@@ -106,10 +150,8 @@ app.post("/login", (req, res) => {
   let user = users[userId];
   let userEmail = req.body.email
   let userPassword = req.body.password
-  console.log(users)
+  //console.log(users)
   for (let key in users){
-  console.log(users[key].password , userPassword)
-  console.log(users[key].email ,userEmail)
     if (users[key].email === userEmail){
       if (users[key].password === userPassword){
         res.cookie('user_id', users[key].id)
@@ -148,7 +190,7 @@ app.post("/register", (req, res) => {
     email: userEmail,
     password: userPassword
   }
-  console.log(users)
+  //console.log(users)
   res.cookie('user_id', x)
   res.redirect("/urls")
 });

@@ -47,13 +47,20 @@ body
     </tr>
     <% for (key in urls) { %>
     <tr>
-        <td><b><%= key %></b>: <%= urls[key] %></td>
-        <td><form method="POST" action="/urls/<%=key%>/delete">
-        	<input type="submit" value="DELETE">
-        </form></td>
+        <td><b><%= key %></b>: <%= urls[key].longURL %></td>
+        <td>
+          <form method="GET" action="/urls/<%=key%>">
+            <input type="submit" value="EDIT">
+          </form>
+        </td>
+        <td>
+          <form method="POST" action="/urls/<%=key%>/delete">
+            <input type="submit" value="DELETE">
+          </form>
+        </td>
     </tr>
     <% }; %>
   </table>
-  <a href="">shorten your links!</a>
+  <a href="/urls/new">shorten your links!</a>
 </body>
 </html>
