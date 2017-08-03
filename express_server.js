@@ -53,12 +53,6 @@ app.get("/", (req, res) => {
 });
     
 app.get("/urls", (req, res) => {
-  // let usernameCookie
-  // if (req.cookies) {
-  //   usernameCookie = req.cookies['username']
-  // }	else {
-  //   usernameCookie = undefined;  
-  // }
   let userId = req.cookies['user_id']
   let user = users[userId];
 	let templateVars = {
