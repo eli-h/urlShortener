@@ -18,7 +18,7 @@ input[type=email], input[type=password] {
 <div class="topnav">
   <% if (user === undefined) { %>
         <form action="/login" method="POST">
-            <input id="username" type="text" name="username" placeholder="enter username" style="width: 100px, height: 100px;">
+            <input id="username" type="text" name="email" placeholder="enter username" style="width: 100px, height: 100px;">
             <input id="password" type="password" name="password" placeholder="password">
             <input type="submit" value="Sign In">
         </form>

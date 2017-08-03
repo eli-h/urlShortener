@@ -53,21 +53,25 @@ app.get("/", (req, res) => {
 });
     
 app.get("/urls", (req, res) => {
-  let usernameCookie
-  if (req.cookies) {
-    usernameCookie = req.cookies['username']
-  }	else {
-    usernameCookie = undefined;  
-  }
+  // let usernameCookie
+  // if (req.cookies) {
+  //   usernameCookie = req.cookies['username']
+  // }	else {
+  //   usernameCookie = undefined;  
+  // }
+  let userId = req.cookies['user_id']
+  let user = users[userId];
 	let templateVars = {
-    users: users[user_id], 
+    user: user, 
     urls: urlDatabase
   };
 	res.render('urls_index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-	let templateVars = users
+  let userId = req.cookies['user_id']
+  let user = users[userId];
+	let templateVars = user
   res.render("urls_new", templateVars);
 });
 
@@ -104,12 +108,28 @@ app.post("/urls/:key/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => { 
-  res.cookie('username', req.body.username)
-  res.redirect("/urls/");       
+  let userId = req.cookies['user_id'];
+  let user = users[userId];
+  let userEmail = req.body.email
+  let userPassword = req.body.password
+  console.log(users)
+  for (let key in users){
+  console.log(users[key].password , userPassword)
+  console.log(users[key].email ,userEmail)
+    if (users[key].email === userEmail){
+      if (users[key].password === userPassword){
+        res.cookie('user_id', users[key].id)
+        res.redirect("/urls/"); 
+      } else {
+        res.send('incorrect password');
+      }
+    }
+  } 
+  res.send('email not registered')     
 });
 
 app.post("/logout", (req, res) => { 
-  res.clearCookie('username')
+  res.clearCookie('user_id')
   res.redirect("/urls/");       
 });
 
@@ -130,9 +150,11 @@ app.post("/register", (req, res) => {
     }
   }
   users[x] = {
+    id: x,
     email: userEmail,
     password: userPassword
   }
+  console.log(users)
   res.cookie('user_id', x)
   res.redirect("/urls")
 });

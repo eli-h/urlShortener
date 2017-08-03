@@ -1,7 +1,7 @@
 <div class="topnav">
   <% if (user === undefined) { %>
-        <a href="urls_register.ejs">Register</a>
-        <a href="urls_login.ejs">Login</a>
+        <a href="/register">Register</a>
+        <a href="/login">Login</a>
     <% } else { %>
         <p>User: <b><%= user.id %></b></p>
         <form action="/logout" method="POST">
