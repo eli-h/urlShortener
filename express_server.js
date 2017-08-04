@@ -170,7 +170,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
   let x = generateRandomString();
-  let userEmail = req.body.email
+  let userEmail = req.body.email;
   let userPassword = req.body.password;
   let hashed_password = bcrypt.hashSync(userPassword, 10);
   if (userEmail.length <= 0 || userPassword.length <= 0){
