@@ -1,13 +1,13 @@
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 const express = require("express");
-var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+const app = express();
+const PORT = process.env.PORT || 8080; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 
-var cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session')
 app.use(cookieSession({
   name: 'url_id',
   keys: ['iuytfdghjikuygfvbnjkiuyt']
@@ -36,23 +36,23 @@ const users = {
 		password: "brej"
 	}
 };
-
+//gathers all link associated with user
 function urlsForUser(id){
   let userLinks = {};
   //let current_user = req.cookies['user_id']
-  for (var url in urlDatabase){
+  for (let url in urlDatabase){
     if (urlDatabase[url].userID === id){
       userLinks[url] = urlDatabase[url]
     }
   }
   return userLinks;
 }
-
+//generates random short url
 function generateRandomString(){
 	let random = "";
-	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i =0; i < 6; i++){
+  for (let i =0; i < 6; i++){
     random += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return random;
@@ -70,7 +70,6 @@ app.get("/register", (req, res) => {
   if (!current_user){
       res.render("urls_register");
     } else {
-      console.log('redirect')
       res.redirect('/urls')
     }
 
@@ -79,7 +78,7 @@ app.get("/register", (req, res) => {
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
-    
+//renders urls page with users links, or redirects to login   
 app.get("/urls", (req, res) => {
   let current_user = users[req.session['user_id']];
   let userId = req.session['user_id'];
@@ -93,12 +92,12 @@ app.get("/urls", (req, res) => {
     res.redirect('/login');
     return;
   } else {
-    templateVars.link = links;
+    templateVars.link = links; 
   }
 
 	res.render('urls_index', templateVars);
 });
-
+//renders page where user can create new short links
 app.get("/urls/new", (req, res) => {
   let current_user = req.session['user_id'];
   let userId = req.session['user_id'];
@@ -109,9 +108,9 @@ app.get("/urls/new", (req, res) => {
     res.redirect('/login');
   }
 });
-
+//renders edit page for short urls
 app.get("/urls/:id", (req, res) => {
-  console.log(urlDatabase[req.params.id])
+
   let current_user = req.session['user_id'];
 
   if (!urlDatabase[req.params.id]){
@@ -132,7 +131,6 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => { 
-  //what if 2 users want to use same link?
   urlDatabase[req.params.id].longURL = req.body.updateURL;
   res.redirect("/urls");       
 });
@@ -145,9 +143,8 @@ app.post("/urls", (req, res) => {
   }
   res.redirect("urls/");       
 });
-
+//redirects to longlink if it exists
 app.get("/u/:shortURL", (req, res) => {
-  //console.log(urlDatabase[req.params.shortURL].longURL)
   if (urlDatabase[req.params.shortURL]){
     let longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
