@@ -3,7 +3,7 @@
         <a href="/register">Register</a>
         <a href="/login">Login</a>
     <% } else { %>
-        <p>User: <b><%= user.id %></b></p>
+        <p>User: <b><%= user.email %></b></p>
         <form action="/logout" method="POST">
             <input type="submit" value="Logout">
         </form>

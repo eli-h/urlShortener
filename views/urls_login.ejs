@@ -22,6 +22,7 @@ input[type=email], input[type=password] {
             <input id="password" type="password" name="password" placeholder="password">
             <input type="submit" value="Sign In">
         </form>
+        <p>don't have an account? <a href="/register">Register</a></p>
     <% } else { %>
         <p>User: <b><%= user.id %></b></p>
         <form action="/logout" method="POST">

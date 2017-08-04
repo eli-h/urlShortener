@@ -66,7 +66,14 @@ app.get("/login", (req, res) => {
 
 //renders the register page
 app.get("/register", (req, res) => {
-  res.render("urls_register");
+  let current_user = users[req.session['user_id']];
+  if (!current_user){
+      res.render("urls_register");
+    } else {
+      console.log('redirect')
+      res.redirect('/urls')
+    }
+
 });
 
 app.get("/", (req, res) => {
@@ -83,7 +90,7 @@ app.get("/urls", (req, res) => {
     urls: links
   };
   if (!current_user){
-    res.redirect('/register');
+    res.redirect('/login');
     return;
   } else {
     templateVars.link = links;
@@ -104,17 +111,24 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    user: users[req.session.user_id], 
-    shortURL: req.params.id, 
-    longURL: urlDatabase[req.params.id].longURL
-  };
+  console.log(urlDatabase[req.params.id])
   let current_user = req.session['user_id'];
-  if (current_user === urlDatabase[req.params.id]['userID']){
+
+  if (!urlDatabase[req.params.id]){
+    res.send('short URL doesn\'t exist')
+  } else if (current_user === urlDatabase[req.params.id]['userID']){
+    let templateVars = {
+      user: users[req.session.user_id], 
+      shortURL: req.params.id, 
+      longURL: urlDatabase[req.params.id].longURL
+    }
     res.render("urls_show", templateVars);
+    return;
   } else {
     res.send('cannot edit someone elses url');
+    return;
   }
+
 });
 
 app.post("/urls/:id", (req, res) => { 
@@ -133,8 +147,16 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  //console.log(urlDatabase[req.params.shortURL].longURL)
+  if (urlDatabase[req.params.shortURL]){
+    let longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+    return;
+  } else {
+    res.send('short link doesn\'t exist');
+    return;
+  }
+
 });
 
 app.post("/urls/:key/delete", (req, res) => { 
